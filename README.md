@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform: macOS](https://img.shields.io/badge/platform-macOS-lightgrey)](macos/)
 [![Platform: Windows](https://img.shields.io/badge/platform-Windows-blue)](windows/)
+[![Release](https://img.shields.io/github/v/release/adriandantas/djstudio-uninstaller)](https://github.com/adriandantas/djstudio-uninstaller/releases)
 
 Community-maintained uninstaller scripts for [DJ.Studio](https://dj.studio). Removes the application and all residual files left behind after a standard uninstall.
 
