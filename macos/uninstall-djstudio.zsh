@@ -29,7 +29,7 @@
 # ============================================================
 
 # ── Version ─────────────────────────────────────────────────
-SCRIPT_VERSION="1.0.0"
+SCRIPT_VERSION="1.1.0"
 
 # ── Safety flags ─────────────────────────────────────────────
 # NO_UNSET  : treat unset variables as errors
@@ -131,7 +131,7 @@ echo ""
 echo "  Hello! This script will ${BOLD}safely remove DJ.Studio${RESET} from your Mac."
 echo "  Here's what it will do:"
 echo ""
-echo "  1. ${SEARCH}  Scan your Mac for all DJ.Studio files"
+echo "  1. ${SEARCH}  Scan your Mac for the DJ.Studio app and support files"
 echo "  2. ${LOG_ICON}  Show you exactly what it found"
 echo "  3. ❓  Ask your permission before deleting anything"
 echo "  4. ${TRASH} Remove only the files you approve"
@@ -139,6 +139,7 @@ echo "  5. ${LOG_ICON}  Save a log on your Desktop so you can review it later"
 echo ""
 echo "  ${YELLOW}${WARNING} Important:${RESET} This will ${BOLD}not${RESET} empty your Trash."
 echo "  You'll do that yourself when you're ready — no rush!"
+echo "  Your DJ.Studio database and saved mixes will be ${BOLD}left alone${RESET}."
 echo ""
 echo "  ${BLUE}——————————————————————————————————————————————————————${RESET}"
 echo "  ${BOLD}MIT License${RESET} · Copyright © 2026 Adrian Dantas"
@@ -164,7 +165,7 @@ log "User confirmed to proceed."
 # ============================================================
 #   STEP 1 — SCAN FOR FILES
 # ============================================================
-header "${SEARCH}  Step 1 of 3 — Scanning your Mac for DJ.Studio files..."
+header "${SEARCH}  Step 1 of 3 — Scanning your Mac for DJ.Studio support files..."
 echo ""
 
 FOUND_ITEMS=()
@@ -182,9 +183,6 @@ check_path() {
 
 step "Checking Applications folder..."
 check_path "/Applications/DJ.Studio.app"                              "DJ.Studio application"
-
-step "Checking Music folder..."
-check_path "$HOME/Music/DJ.Studio"                                    "DJ.Studio music library & database"
 
 step "Checking Application Support..."
 check_path "$HOME/Library/Application Support/dj.studio.app"        "DJ.Studio app support data"
@@ -212,8 +210,8 @@ header "${LOG_ICON}  Step 2 of 3 — Here's what was found"
 echo ""
 
 if [[ ${#FOUND_ITEMS[@]} -eq 0 ]]; then
-  echo "  ${PARTY}  Great news — no DJ.Studio files were found on this Mac!"
-  echo "  It looks like DJ.Studio is already fully removed."
+  echo "  ${PARTY}  Great news — no removable DJ.Studio files were found on this Mac!"
+  echo "  It looks like the app and supported leftovers are already gone."
   echo ""
   echo "  ${LOG_ICON}  A log has been saved to: ${BOLD}$LOG_FILE${RESET}"
   log "No files found. Nothing to delete."
@@ -226,9 +224,9 @@ for item in "${FOUND_ITEMS[@]}"; do
   echo "    ${RED}•${RESET}  $item"
 done
 echo ""
-echo "  ${WARNING} ${YELLOW}Your database and any saved DJ sets inside DJ.Studio"
-echo "  will also be removed. Make sure you have exported anything"
-echo "  you'd like to keep before continuing.${RESET}"
+echo "  ${WARNING} ${YELLOW}Your DJ.Studio database, exports, and saved mixes"
+echo "  will be left in place for safety. If you want to remove them too,"
+echo "  you'll need to do that manually after this script finishes.${RESET}"
 echo ""
 
 echo -n "  Move all of the above to the Trash? Type ${BOLD}yes${RESET} to confirm: "
@@ -275,7 +273,7 @@ log "Uninstall completed at $END_TIME"
 
 echo "${BOLD}${CYAN}╔══════════════════════════════════════════════════════════╗${RESET}"
 if [[ "$ALL_OK" == "true" ]]; then
-  echo "${BOLD}${CYAN}║   ${PARTY}  All done! DJ.Studio has been removed.              ║${RESET}"
+  echo "${BOLD}${CYAN}║   ${PARTY}  All done! DJ.Studio has been cleaned up.           ║${RESET}"
 else
   echo "${BOLD}${CYAN}║   ${WARNING}  Done — some items could not be removed.            ║${RESET}"
 fi
@@ -284,6 +282,8 @@ echo ""
 echo "  ${CHECKMARK}  Files have been moved to your ${BOLD}Trash${RESET} (not permanently deleted yet)."
 echo "  When you're ready, right-click the Trash in your Dock"
 echo "  and choose ${BOLD}\"Empty Trash\"${RESET} to free up the disk space."
+echo ""
+echo "  Your DJ.Studio database and saved mixes were left untouched."
 echo ""
 echo "  ${LOG_ICON}  A full log of everything that happened has been saved to:"
 echo "  ${BOLD}$LOG_FILE${RESET}"

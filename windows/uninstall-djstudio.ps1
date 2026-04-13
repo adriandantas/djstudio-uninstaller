@@ -29,7 +29,7 @@
 # ============================================================
 
 # ── Version ─────────────────────────────────────────────────
-$ScriptVersion = "1.0.0"
+$ScriptVersion = "1.1.0"
 
 # ── Safety flags ─────────────────────────────────────────────
 Set-StrictMode -Version Latest
@@ -158,7 +158,7 @@ Write-Host ""
 Write-Host "  Hello! This script will safely remove DJ.Studio from your PC."
 Write-Host "  Here's what it will do:"
 Write-Host ""
-Write-Host "  1.  Scan your PC for the DJ.Studio application and data files"
+Write-Host "  1.  Scan your PC for the DJ.Studio application and support files"
 Write-Host "  2.  Show you exactly what it found"
 Write-Host "  3.  Ask your permission before changing anything"
 Write-Host "  4.  Run the official DJ.Studio uninstaller (if the app is installed)"
@@ -167,6 +167,7 @@ Write-Host "  6.  Save a log to your Desktop so you can review it later"
 Write-Host ""
 Write-Color "  WARNING: This will NOT empty your Recycle Bin." Yellow
 Write-Host "  You will do that yourself when you are ready — no rush!"
+Write-Host "  Your DJ.Studio database and saved mixes will be left alone."
 Write-Host ""
 Write-Color "  ——————————————————————————————————————————————————————" Blue
 Write-Host  "  MIT License · Copyright © 2026 Adrian Dantas"
@@ -194,7 +195,7 @@ Write-Log "User confirmed to proceed."
 # ============================================================
 #   STEP 1 — SCAN
 # ============================================================
-Write-Header "  Step 1 of 3 — Scanning your PC for DJ.Studio files..."
+Write-Header "  Step 1 of 3 — Scanning your PC for DJ.Studio support files..."
 Write-Host ""
 
 $FoundItems   = [System.Collections.Generic.List[hashtable]]::new()
@@ -224,9 +225,6 @@ function Check-Path {
 Write-Step "Checking AppData folder..."
 Check-Path "$env:APPDATA\dj.studio.app" "DJ.Studio config and extensions"
 
-Write-Step "Checking Music folder..."
-Check-Path "$env:USERPROFILE\Music\DJ.Studio" "DJ.Studio database and mixes"
-
 Write-Host ""
 
 # ============================================================
@@ -238,8 +236,8 @@ Write-Host ""
 $NothingFound = (-not $InstalledApp) -and ($FoundItems.Count -eq 0)
 
 if ($NothingFound) {
-    Write-Host "  Great news — no DJ.Studio files were found on this PC!"
-    Write-Host "  It looks like DJ.Studio is already fully removed."
+    Write-Host "  Great news — no removable DJ.Studio files were found on this PC!"
+    Write-Host "  It looks like the app and supported leftovers are already gone."
     Write-Host ""
     Write-Color "  A log has been saved to: $LogFile" Cyan
     Write-Log "No files found. Nothing to delete."
@@ -261,13 +259,12 @@ if ($FoundItems.Count -gt 0) {
     Write-Host ""
 }
 
-Write-Color "  WARNING: Your database and any saved mixes inside DJ.Studio" Yellow
-Write-Color "  will also be removed. Make sure you have backed up anything" Yellow
-Write-Color "  you want to keep before continuing." Yellow
+Write-Color "  WARNING: Your DJ.Studio database, exports, and saved mixes" Yellow
+Write-Color "  will be left in place for safety. If you want to remove them too," Yellow
+Write-Color "  you will need to delete them manually after this script finishes." Yellow
 Write-Host ""
-Write-Color "  NOTE: If you have moved your DJ.Studio database folder to a" Yellow
-Write-Color "  custom location (via Settings > Folders > Database folder)," Yellow
-Write-Color "  you will need to remove that folder manually." Yellow
+Write-Color "  NOTE: This applies to both the default database location and any" Yellow
+Write-Color "  custom location you configured via Settings > Folders > Database folder." Yellow
 Write-Host ""
 
 Write-Color "  Proceed with removal? Type " -NoNewline
@@ -360,15 +357,19 @@ Write-Log "Uninstall completed at $EndTime"
 
 Write-Color "╔══════════════════════════════════════════════════════════╗" Cyan
 if ($AllOk) {
-    Write-Color "║   All done! DJ.Studio has been removed.                  ║" Cyan
+    Write-Color "║   All done! DJ.Studio has been cleaned up.               ║" Cyan
 } else {
     Write-Color "║   Done — some items could not be removed automatically.  ║" Cyan
 }
 Write-Color "╚══════════════════════════════════════════════════════════╝" Cyan
 Write-Host ""
-Write-Host "  Data folders have been moved to your Recycle Bin."
-Write-Host "  Right-click the Recycle Bin on your Desktop and choose"
-Write-Host "  ""Empty Recycle Bin"" when you are ready to free up disk space."
+if ($FoundItems.Count -gt 0) {
+    Write-Host "  Data folders have been moved to your Recycle Bin."
+    Write-Host "  Right-click the Recycle Bin on your Desktop and choose"
+    Write-Host "  ""Empty Recycle Bin"" when you are ready to free up disk space."
+    Write-Host ""
+}
+Write-Host "  Your DJ.Studio database and saved mixes were left untouched."
 Write-Host ""
 Write-Color "  A full log has been saved to:" Cyan
 Write-Color "  $LogFile" White

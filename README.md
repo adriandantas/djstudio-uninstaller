@@ -5,7 +5,7 @@
 [![Platform: Windows](https://img.shields.io/badge/platform-Windows-blue)](windows/)
 [![Release](https://img.shields.io/github/v/release/adriandantas/djstudio-uninstaller)](https://github.com/adriandantas/djstudio-uninstaller/releases)
 
-Community-maintained uninstaller scripts for [DJ.Studio](https://dj.studio). Removes the application and all residual files left behind after a standard uninstall.
+Community-maintained uninstaller scripts for [DJ.Studio](https://dj.studio). Removes the application and safe leftover support files left behind after a standard uninstall, while preserving your database and saved mixes.
 
 ---
 
@@ -32,7 +32,7 @@ Set a pinned Git ref (tag or commit SHA), then run:
 Open **Terminal** and paste:
 
 ```zsh
-REF="v1.0.0"  # use a release tag or full commit SHA
+REF="v1.1.0"  # use a release tag or full commit SHA
 curl -fsSL "https://raw.githubusercontent.com/adriandantas/djstudio-uninstaller/$REF/macos/uninstall-djstudio.zsh" -o /tmp/uninstall-djstudio.zsh
 less /tmp/uninstall-djstudio.zsh
 zsh /tmp/uninstall-djstudio.zsh
@@ -43,7 +43,7 @@ zsh /tmp/uninstall-djstudio.zsh
 Open **PowerShell** and paste:
 
 ```powershell
-$ref = "v1.0.0"  # use a release tag or full commit SHA
+$ref = "v1.1.0"  # use a release tag or full commit SHA
 $tmp = "$env:TEMP\uninstall-djstudio.ps1"
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/adriandantas/djstudio-uninstaller/$ref/windows/uninstall-djstudio.ps1" -OutFile $tmp
 Get-Content $tmp
@@ -54,7 +54,7 @@ Get-Content $tmp
 
 ## Why this exists
 
-DJ.Studio stores its database, cached stems, preferences, exports, and application support data across several locations on your system. Removing the app alone does not remove them. These scripts walk users through a complete removal — safely, with confirmation at every step, and a log saved to the Desktop when done.
+DJ.Studio stores its support files, preferences, caches, exports, and database across several locations on your system. Removing the app alone does not remove all of the safe-to-clean leftovers. These scripts walk users through removing the app and supported leftover files — safely, with confirmation at every step, and a log saved to the Desktop when done. Your database and saved mixes are preserved by design.
 
 ---
 
@@ -85,7 +85,7 @@ zsh macos/uninstall-djstudio.zsh
 
 The script will:
 
-1. Scan your system for DJ.Studio files
+1. Scan your system for the DJ.Studio app and support files
 2. Show you exactly what it found
 3. Ask for confirmation before moving anything to the Trash
 4. Save a timestamped log to your Desktop
@@ -97,12 +97,11 @@ Nothing is permanently deleted. All removals go to the Trash, which you empty at
 | Location | Contents |
 |----------|----------|
 | `/Applications/DJ.Studio.app` | The application |
-| `~/Music/DJ.Studio/` | Database, cached stems, and exports |
 | `~/Library/Application Support/dj.studio.app/` | Application support data |
 | `~/Library/Preferences/com.djstudio*.plist` | Preference files |
 | `~/Library/Application Support/.loopcloud-samples-v3/` | Loopcloud cache (if present) |
 
-> **Note:** Removing `~/Music/DJ.Studio/` will also affect DJ.Studio Next if installed, as both apps share the same database by default. If you have moved your database to a custom location via **Settings > Folders > Database folder**, you will need to remove that folder manually.
+> **Note:** This script does **not** remove your DJ.Studio database, exports, or saved mixes. That data may be shared with DJ.Studio Next and may contain projects you still want to keep. If you want to remove the database too, you must do that manually, whether it is in the default `~/Music/DJ.Studio/` location or a custom location set via **Settings > Folders > Database folder**.
 
 ---
 
@@ -144,7 +143,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Restricted
 The script will:
 
 1. Check whether DJ.Studio is installed via the Windows registry
-2. Scan for residual data folders
+2. Scan for leftover support files
 3. Show you exactly what it found
 4. Ask for confirmation before changing anything
 5. Run the official DJ.Studio uninstaller for the application
@@ -159,23 +158,18 @@ Nothing is permanently deleted. All removals go to the Recycle Bin, which you em
 |----------|----------|
 | Installed application | Removed via the official DJ.Studio uninstaller |
 | `%APPDATA%\dj.studio.app\` | Config files and installed extensions |
-| `%USERPROFILE%\Music\DJ.Studio\` | Database and mixes (default location) |
 
-> **Note:** If you have moved your database to a custom location via **Settings > Folders > Database folder**, you will need to remove that folder manually — the script only checks the default location.
+> **Note:** This script does **not** remove your DJ.Studio database, exports, or saved mixes. If you want to remove that data too, you must do it manually, whether it is in the default `%USERPROFILE%\Music\DJ.Studio\` location or a custom location set via **Settings > Folders > Database folder**.
 
 ---
 
-## Database folder contents
+## Database folder
 
-Both scripts remove the entire `Music/DJ.Studio/` folder. For reference, here is what that folder contains:
+As of `v1.1.0`, these uninstallers intentionally leave the DJ.Studio database folder alone.
 
-| Subfolder | Contents | Safe to delete? |
-|-----------|----------|-----------------|
-| `Cache/` | Cached stem separation files | Yes |
-| `Exports/` | Exported mixes | Yes, if you have copies elsewhere |
-| `audio-library-audioData/` | Audio file copies from projects created before v4.1 | Only via DJ.Studio's built-in cleanup tool |
+That folder can contain your saved mixes, exports, cached stems, and older project audio copies. Because deleting it may remove work you still care about, this repository now limits itself to the application and supported leftover files.
 
-> The `audio-library-audioData/` folder is included when the entire `Music/DJ.Studio/` folder is removed. If you have active projects that depend on files in this folder and no longer have the original files elsewhere on your machine, export or back up those projects before running this script.
+If you decide you want to delete the database too, do it manually after reviewing what is inside your `Music/DJ.Studio/` folder or your custom database location from **Settings > Folders > Database folder**.
 
 ---
 
@@ -193,11 +187,17 @@ If you are a DJ.Studio team member and would like to adopt or adapt these script
 
 ---
 
+## Acknowledgements
+
+Thank you to the support team at **DJ.Studio B.V.** for the product feedback that informed the safety-focused changes in `v1.1.0`.
+
+---
+
 ## Project policy
 
 - **Compatibility target**: macOS 10.15+ and Windows 10+.
 - **Versioning**: scripts include an internal `1.x.y` version string; prefer running pinned release tags.
-- **Support scope**: paths documented in this README are maintained; custom DJ.Studio data locations require manual removal.
+- **Support scope**: the app, app support files, preferences, and documented caches are maintained; database and mix removal is manual by design.
 - **Security reporting**: for sensitive security concerns, avoid public issue details and contact repository maintainer directly.
 
 ---
